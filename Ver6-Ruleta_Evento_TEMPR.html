@@ -1,30 +1,20 @@
 <!-- Developed by Wilhem Jeldes, MS for Wanda Winter of TotalEnergies. May, 2025. -->
-<!-- Ver6: Enhanced Scaling and Mobile Responsive Design -->
+<!-- Ver7: Refactored for broad browser compatibility -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario y Ruleta para Evento - Ver6 Enhanced</title>
+    <title>Formulario y Ruleta para Evento - Ver7 Refactored</title>
     <style>
-        :root {
-            --header-bg-color: #ff0000; /* Header banner color */
-            --header-text-color: white;
-            --button-bg-color: #285aff; /* Form button color */
-            --button-text-color: white;
-            --spin-button-bg-color: #28c896; /* Wheel button color */
-            --wheel-indicator-color: #ff0000;
-            --modal-title-color: #ff0000;
-            --prize-out-of-stock-color: #7f8c8d;
-        }
-
         * {
             margin: 0;
             padding: 0;
+            -webkit-box-sizing: border-box;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             height: 100vh;
             display: flex;
@@ -32,17 +22,17 @@
             background-color: #f0f2f5;
             overflow: hidden;
         }
-        
+
         .container {
             display: flex;
             flex-direction: column;
             height: 100%;
             max-width: 100%;
         }
-        
+
         .header {
-            background-color: var(--header-bg-color);
-            color: var(--header-text-color);
+            background-color: #ff0000;
+            color: white;
             text-align: center;
             padding: 15px 20px;
             font-size: 28px;
@@ -58,22 +48,29 @@
             object-fit: contain;
             margin-right: 15px;
         }
-        
+
         .header-center {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         .robot-quartz-gif {
             height: 60px;
             margin-left: 15px;
-        }        .header-buttons {
+        }
+
+        .header-buttons {
             display: flex;
-            gap: 15px;
             align-items: center;
-        }        .admin-toggle-btn {
-            background-color: var(--button-bg-color);
+        }
+
+        .header-buttons > .admin-toggle-btn:not(:first-child) {
+            margin-left: 15px;
+        }
+
+        .admin-toggle-btn {
+            background-color: #285aff;
             color: white;
             border: none;
             padding: 10px 18px;
@@ -81,19 +78,24 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
+            -webkit-transition: background-color 0.3s, -webkit-transform 0.2s;
             transition: background-color 0.3s, transform 0.2s;
         }
-        
+
         .admin-toggle-btn.active {
-            background-color: var(--header-bg-color);
+            background-color: #ff0000;
+            -webkit-transform: scale(1.05);
             transform: scale(1.05);
-        }.wheel-only-button {
+        }
+
+        .wheel-only-button {
             background-color: white;
-            border: 2px solid var(--spin-button-bg-color);
+            border: 2px solid #28c896;
             width: 45px;
             height: 45px;
-            border-radius: 50%; /* Make it circular */
+            border-radius: 50%;
             cursor: pointer;
+            -webkit-transition: -webkit-transform 0.3s, box-shadow 0.3s;
             transition: transform 0.3s, box-shadow 0.3s;
             display: flex;
             justify-content: center;
@@ -103,34 +105,39 @@
             overflow: hidden;
             padding: 0;
         }
-        
+
         .wheel-icon {
             width: 35px;
             height: 35px;
             object-fit: contain;
+            -webkit-transition: -webkit-transform 0.3s;
             transition: transform 0.3s;
         }
-        
+
         .wheel-only-button.form-mode .wheel-icon {
+            -webkit-transform: rotate(180deg);
             transform: rotate(180deg);
         }
-        
+
         .wheel-only-button:hover {
+            -webkit-transform: rotate(20deg);
             transform: rotate(20deg);
             box-shadow: 0 5px 10px rgba(0,0,0,0.3);
         }
-        
+
         .admin-toggle-btn:hover {
             opacity: 0.9;
         }
-        
+
         .content {
             display: flex;
             flex-direction: column;
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-        }        .form-section {
+        }
+
+        .form-section {
             background-color: white;
             border-radius: 15px;
             padding: 30px;
@@ -142,7 +149,7 @@
             width: 100%;
             position: relative;
         }
-        
+
         .form-section::before, .form-section::after {
             content: '';
             position: absolute;
@@ -154,6 +161,7 @@
             background-repeat: no-repeat;
             z-index: -1;
             top: 50%;
+            -webkit-transform: translateY(-50%);
             transform: translateY(-50%);
         }
 
@@ -163,7 +171,9 @@
 
         .form-section::after {
             right: -160px;
-        }.form-inner {
+        }
+
+        .form-inner {
             background: rgba(255, 255, 255, 0.92);
             padding: 25px;
             border-radius: 10px;
@@ -171,7 +181,7 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .admin-section {
             background-color: white;
             border-radius: 15px;
@@ -182,46 +192,47 @@
             margin-left: auto;
             margin-right: auto;
             width: 100%;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .admin-section h3 {
-            color: var(--header-bg-color);
+            color: #ff0000;
             margin-top: 20px;
             margin-bottom: 10px;
-            border-bottom: 2px solid var(--header-bg-color);
+            border-bottom: 2px solid #ff0000;
             padding-bottom: 5px;
         }
-        
+
         .form-title {
             font-size: 24px;
             margin-bottom: 20px;
-            color: var(--header-bg-color);
+            color: #ff0000;
             text-align: center;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
             font-size: 18px;
         }
-        
+
         input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 18px;
+            -webkit-transition: border-color 0.3s;
             transition: border-color 0.3s;
         }
-        
+
         input:focus, select:focus, textarea:focus {
-            border-color: var(--button-bg-color);
+            border-color: #285aff;
             outline: none;
         }
 
@@ -229,10 +240,10 @@
             padding: 5px;
             height: 40px;
         }
-        
+
         .btn {
-            background-color: var(--button-bg-color);
-            color: var(--button-text-color);
+            background-color: #285aff;
+            color: white;
             border: none;
             padding: 14px 20px;
             border-radius: 8px;
@@ -240,18 +251,21 @@
             font-size: 18px;
             font-weight: bold;
             width: 100%;
+            -webkit-transition: background-color 0.3s;
             transition: background-color 0.3s;
             margin-top: 10px;
         }
-        
+
         .btn:hover {
             opacity: 0.9;
         }
-        
+
         .btn:active {
+            -webkit-transform: scale(0.98);
             transform: scale(0.98);
         }
-          .wheel-section {
+
+        .wheel-section {
             display: none;
             flex-direction: column;
             align-items: center;
@@ -263,66 +277,69 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             background-color: white;
-        }        .wheel-container {
+        }
+
+        .wheel-container {
             position: relative;
             width: 100%;
             max-width: 600px;
-            max-height: 600px;
-            aspect-ratio: 1/1;
             margin: 30px auto;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             padding: 10px;
         }
-        
+
         #wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             position: relative;
             overflow: hidden;
+            -webkit-transition: -webkit-transform 7s cubic-bezier(0.25, 0.1, 0.25, 1);
             transition: transform 7s cubic-bezier(0.25, 0.1, 0.25, 1);
+            -webkit-transform: rotate(0deg);
             transform: rotate(0deg);
             box-shadow: 0 0 20px rgba(0,0,0,0.3), inset 0 0 10px rgba(0,0,0,0.2);
         }
-        
+
         .wheel-indicator {
             position: absolute;
             top: -15px;
             left: 50%;
+            -webkit-transform: translateX(-50%);
             transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-top: 30px solid var(--wheel-indicator-color);
+            border-top: 30px solid #ff0000;
             z-index: 10;
         }
-                
+
         .spin-button {
-            background-color: var(--spin-button-bg-color);
+            background-color: #28c896;
             margin-top: 30px;
             width: 200px;
         }
-        
+
         .logo-below-wheel {
             margin-top: 30px;
             margin-bottom: 20px;
             width: 200px;
         }
-        
+
         #result {
             text-align: center;
             margin-top: 30px;
             font-size: 30px;
             font-weight: bold;
-            color: var(--modal-title-color);
+            color: #ff0000;
             min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -335,7 +352,7 @@
             align-items: center;
             z-index: 1000;
         }
-        
+
         .modal-content {
             background-color: white;
             padding: 40px;
@@ -344,9 +361,15 @@
             max-width: 80%;
             width: 500px;
             position: relative;
+            -webkit-animation: popup 0.5s;
             animation: popup 0.5s;
         }
-        
+
+        @-webkit-keyframes popup {
+            0% { -webkit-transform: scale(0.7); opacity: 0; }
+            100% { -webkit-transform: scale(1); opacity: 1; }
+        }
+
         @keyframes popup {
             0% { transform: scale(0.7); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
@@ -356,12 +379,31 @@
             position: fixed;
             width: 5px;
             height: 5px;
-            /* background-color will be set by JS */
             border-radius: 50%;
             z-index: 1001;
             pointer-events: none;
+            -webkit-animation: explodeAndFall 2s ease-out forwards;
             animation: explodeAndFall 2s ease-out forwards;
+            -webkit-animation-iteration-count: 2;
             animation-iteration-count: 2;
+        }
+
+        @-webkit-keyframes explodeAndFall {
+            0% {
+                -webkit-transform: translate(0, 0) scale(0.3);
+                transform: translate(0, 0) scale(0.3);
+                opacity: 1;
+            }
+            30% {
+                -webkit-transform: translate(var(--translateX), var(--translateY)) scale(1);
+                transform: translate(var(--translateX), var(--translateY)) scale(1);
+                opacity: 1;
+            }
+            100% {
+                -webkit-transform: translate(var(--translateX), calc(var(--translateY) + 70px)) scale(0);
+                transform: translate(var(--translateX), calc(var(--translateY) + 70px)) scale(0);
+                opacity: 0;
+            }
         }
 
         @keyframes explodeAndFall {
@@ -378,40 +420,46 @@
                 opacity: 0;
             }
         }
-        
+
         .prize-title {
-            color: var(--modal-title-color);
+            color: #ff0000;
             font-size: 32px;
             margin-bottom: 20px;
         }
-        
+
         .prize-text {
             font-size: 24px;
             margin-bottom: 30px;
         }
-        
+
         .close-modal {
             margin-top: 20px;
-            background-color: var(--spin-button-bg-color);
+            background-color: #28c896;
         }
-        
+
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            /* background-color will be set by JS */
+            -webkit-animation-name: confetti-fall;
             animation-name: confetti-fall;
+            -webkit-animation-timing-function: ease-in-out;
             animation-timing-function: ease-in-out;
+            -webkit-animation-fill-mode: forwards;
             animation-fill-mode: forwards;
             z-index: 999;
         }
-        
+
+        @-webkit-keyframes confetti-fall {
+            0% { -webkit-transform: translateY(-100vh) rotate(0deg); transform: translateY(-100vh) rotate(0deg); }
+            100% { -webkit-transform: translateY(100vh) rotate(720deg); transform: translateY(100vh) rotate(720deg); }
+        }
+
         @keyframes confetti-fall {
             0% { transform: translateY(-100vh) rotate(0deg); }
             100% { transform: translateY(100vh) rotate(720deg); }
         }
 
-        /* Admin Panel Table Styles */
         .admin-table {
             width: 100%;
             border-collapse: collapse;
@@ -421,44 +469,57 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
-            font-size: 14px;
+            font-size: 16px;
         }
         .admin-table th {
             background-color: #f2f2f2;
             color: #333;
         }
         .admin-table .action-btn {
-            padding: 5px 8px;
-            font-size: 12px;
+            padding: 6px 10px;
+            font-size: 14px;
             margin-right: 5px;
         }
-          /* Enhanced responsive design media queries */
+
+        @media (min-width: 1921px) {
+            .header {
+                font-size: 36px;
+                padding: 20px 30px;
+            }
+            .form-title {
+                font-size: 30px;
+            }
+            .btn {
+                padding: 20px 25px;
+                font-size: 22px;
+            }
+        }
+
         @media (max-width: 320px) {
             .wheel-container {
                 width: 95vw;
                 height: 95vw;
                 max-width: 280px;
-                max-height: 280px;
                 min-width: 240px;
                 min-height: 240px;
             }
-            
+
             #spinBtn {
                 font-size: 12px;
                 padding: 6px 12px;
                 min-height: 44px;
                 min-width: 88px;
             }
-            
+
             .header {
                 font-size: 18px;
                 padding: 10px 15px;
             }
-            
+
             .header-logo {
                 max-height: 35px;
             }
-            
+
             .form-section, .admin-section {
                 padding: 15px;
                 margin: 10px;
@@ -470,22 +531,21 @@
                 width: 90vw;
                 height: 90vw;
                 max-width: 350px;
-                max-height: 350px;
                 min-width: 280px;
                 min-height: 280px;
             }
-            
+
             #spinBtn {
                 font-size: 14px;
                 padding: 8px 16px;
                 min-height: 44px;
                 min-width: 100px;
             }
-            
+
             .header {
                 font-size: 20px;
             }
-            
+
             .header-logo {
                 max-height: 40px;
             }
@@ -496,11 +556,10 @@
                 width: 85vw;
                 height: 85vw;
                 max-width: 500px;
-                max-height: 500px;
                 min-width: 350px;
                 min-height: 350px;
             }
-            
+
             #spinBtn {
                 font-size: 16px;
                 padding: 10px 20px;
@@ -514,11 +573,10 @@
                 width: 70vw;
                 height: 70vw;
                 max-width: 600px;
-                max-height: 600px;
                 min-width: 400px;
                 min-height: 400px;
             }
-            
+
             #spinBtn {
                 font-size: 18px;
                 padding: 12px 24px;
@@ -532,7 +590,6 @@
                 width: 60vw;
                 height: 60vw;
                 max-width: 700px;
-                max-height: 700px;
                 min-width: 500px;
                 min-height: 500px;
             }
@@ -543,33 +600,29 @@
                 width: 50vw;
                 height: 50vw;
                 max-width: 800px;
-                max-height: 800px;
                 min-width: 600px;
                 min-height: 600px;
             }
         }
 
-        /* Touch optimization */
         .btn, .admin-toggle-btn, .wheel-only-button {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Enhanced touch targets for mobile */
         @media (max-width: 768px) {
             .btn {
                 min-height: 44px;
                 padding: 12px 20px;
                 font-size: 16px;
             }
-            
+
             .admin-toggle-btn, .wheel-only-button {
                 min-width: 44px;
                 min-height: 44px;
             }
         }
 
-        /* Para pantallas verticales */
         @media (orientation: portrait) {
             .container {
                 max-width: 100%;
@@ -587,7 +640,6 @@
             }
         }
 
-        /* Password Modal Styles */
         .password-modal {
             display: none;
             position: fixed;
@@ -615,7 +667,7 @@
         }
 
         .password-modal-content h3 {
-            color: var(--header-bg-color);
+            color: #ff0000;
             margin-bottom: 20px;
         }
 
@@ -638,8 +690,8 @@
         }
 
         .password-modal-submit {
-            background-color: var(--button-bg-color);
-            color: var(--button-text-color);
+            background-color: #285aff;
+            color: white;
         }
 
         .password-modal-cancel {
@@ -647,7 +699,6 @@
             color: #333;
         }
 
-        /* Toast Notification Styles */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -666,7 +717,9 @@
             margin-bottom: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             opacity: 0;
+            -webkit-transform: translateX(100%);
             transform: translateX(100%);
+            -webkit-transition: all 0.5s ease;
             transition: all 0.5s ease;
             font-size: 16px;
             max-width: 300px;
@@ -674,6 +727,7 @@
 
         .toast.show {
             opacity: 1;
+            -webkit-transform: translateX(0);
             transform: translateX(0);
         }
 
@@ -702,7 +756,7 @@
                 <button id="wheelOnlyBtn" class="admin-toggle-btn" title="Solo mostrar la ruleta">Wh</button>
             </div>
         </div>
-        
+
         <div class="content">
             <div id="formSection" class="form-section">
                 <div class="form-inner">
@@ -712,12 +766,12 @@
                             <label for="name">Nombre completo</label>
                             <input type="text" id="name" name="name" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="email">Correo electrónico</label>
                             <input type="email" id="email" name="email" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="phone">Teléfono</label>
                             <input type="tel" id="phone" name="phone" required>
@@ -727,24 +781,24 @@
                             <label for="subscribe" style="display: inline; font-weight: normal; font-size: 16px;">Acepto recibir comunicaciones comerciales, promociones y ofertas personalizadas por medios electrónicos.</label>
                             <p style="font-size: 12px; color: #777; margin-top: 10px;">Los datos personales proporcionados serán tratados por TotalEnergies Marketing Puerto Rico Corp. con la finalidad de gestionar su solicitud. Puede ejercer sus derechos de acceso, rectificación, supresión y otros, según se detalla en nuestra Política de Privacidad.</p>
                         </div>
-                        
+
                         <button type="submit" class="btn">¡Participar ahora!</button>
                     </form>
                 </div>
             </div>
-            
+
             <div id="wheelSection" class="wheel-section">
                 <h2 class="form-title">¡Gira la Ruleta y Descubre Tu Premio!</h2>
-                
+
                 <div class="wheel-container">
                     <div class="wheel-indicator"></div>
                     <canvas id="wheel"></canvas>
                 </div>
-                
+
                 <button id="spinBtn" class="btn spin-button">¡GIRAR!</button>
-                
+
                 <div id="result"></div>
-                
+
                 <img src="TotalEnergies_Logo_RGB_32.png" alt="TotalEnergies Logo" class="logo-below-wheel">
             </div>            <div id="adminSection" class="admin-section">
                 <h2 class="form-title">Panel de Administración</h2>
@@ -765,7 +819,7 @@
                     <input type="file" id="adminCenterLogoFile" accept="image/*">
                     <small style="color: #666; display: block; margin-top: 5px;">Logo actual del centro de la ruleta</small>
                 </div>
-                
+
                 <h3>Configuración General</h3>
                 <div class="form-group">
                     <label for="adminCompanyLogoFile">URL Logo Empresa (Header) - Método Anterior</label>
@@ -866,7 +920,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="prizeModal" class="modal">
         <div class="modal-content">
             <h2 class="prize-title">¡Felicidades!</h2>
@@ -886,24 +940,25 @@
             </div>
         </div>
     </div>
-    
+
     <script>
-        let participants = [];
-        let prizes = [];
+    (function() {
+        var participants = [];
+        var prizes = [];
 
         // Roulette variables
-        let canvasWheel, ctxWheel, wheelRadius, wheelCenterX, wheelCenterY, wheelSize;
-        let isSpinning = false;
-        let startAngle = 0;
-        let currentRotationDegrees = 0;
-        let targetRotationDegrees = 0;
-        let selectedPrizeIndex = null;
-        let rouletteCenterLogoImg = null;
+        var canvasWheel, ctxWheel, wheelRadius, wheelCenterX, wheelCenterY, wheelSize;
+        var isSpinning = false;
+        var startAngle = 0;
+        var currentRotationDegrees = 0;
+        var targetRotationDegrees = 0;
+        var selectedPrizeIndex = null;
+        var rouletteCenterLogoImg = null;
 
         // Predefined wheel color scheme
-        const wheelColors = ["#ff0000", "#285aff", "#009bff", "#32c8c8", "#28c896", "#808080", "#ffc800"]; // Updated dark gray for "Suerte en la próxima"
+        var wheelColors = ["#ff0000", "#285aff", "#009bff", "#32c8c8", "#28c896", "#808080", "#ffc800"]; // Updated dark gray for "Suerte en la próxima"
 
-        const defaultPrizes = [
+        var defaultPrizes = [
             { text: "¡Cambio de aceite Quartz gratis!", color: "#ff0000", probability: 10, quantity: 5, initialQuantity: 5 },
             { text: "¡Suerte en la próxima!", color: "#808080", probability: 20, quantity: 0, initialQuantity: 0 },
             { text: "US$20.00 de Combustible TE!", color: "#009bff", probability: 15, quantity: 10, initialQuantity: 10 },
@@ -915,71 +970,78 @@
         ];
 
         // DOM Elements
-        const participantForm = document.getElementById('participantForm');
-        const formSection = document.getElementById('formSection');
-        const wheelSection = document.getElementById('wheelSection');
-        const spinBtn = document.getElementById('spinBtn');
-        const resultDiv = document.getElementById('result');
-        const prizeModal = document.getElementById('prizeModal');
-        const prizeModalText = document.getElementById('prizeModalText');
-        const closeModalBtn = document.getElementById('closeModal');
-        
-        const adminToggleBtn = document.getElementById('adminToggleBtn');
-        const adminSection = document.getElementById('adminSection');
-        const passwordAdminModal = document.getElementById('passwordAdminModal');
-        const adminPasswordInput = document.getElementById('adminPasswordInput');
-        const submitAdminPasswordBtn = document.getElementById('submitAdminPassword');
-        const cancelAdminPasswordBtn = document.getElementById('cancelAdminPassword');
-        const wheelOnlyBtn = document.getElementById('wheelOnlyBtn'); // Ensure wheelOnlyBtn is defined
-        
-        let adminCompanyLogoFileInput;
-        let adminRouletteLogoFileInput;
+        var participantForm = document.getElementById('participantForm');
+        var formSection = document.getElementById('formSection');
+        var wheelSection = document.getElementById('wheelSection');
+        var spinBtn = document.getElementById('spinBtn');
+        var resultDiv = document.getElementById('result');
+        var prizeModal = document.getElementById('prizeModal');
+        var prizeModalText = document.getElementById('prizeModalText');
+        var closeModalBtn = document.getElementById('closeModal');
 
-        const saveAdminSettingsBtn = document.getElementById('saveAdminSettingsBtn');
-        const companyLogoElement = document.getElementById('companyLogo');
+        var adminToggleBtn = document.getElementById('adminToggleBtn');
+        var adminSection = document.getElementById('adminSection');
+        var passwordAdminModal = document.getElementById('passwordAdminModal');
+        var adminPasswordInput = document.getElementById('adminPasswordInput');
+        var submitAdminPasswordBtn = document.getElementById('submitAdminPassword');
+        var cancelAdminPasswordBtn = document.getElementById('cancelAdminPassword');
+        var wheelOnlyBtn = document.getElementById('wheelOnlyBtn');
 
-        const prizeForm = document.getElementById('prizeForm');
-        const prizeTextAdminInput = document.getElementById('prizeTextAdmin');
-        const prizeColorAdminInput = document.getElementById('prizeColorAdmin');
-        const prizeProbabilityAdminInput = document.getElementById('prizeProbabilityAdmin');
-        const prizeQuantityAdminInput = document.getElementById('prizeQuantityAdmin');
-        const prizeEditIndexInput = document.getElementById('prizeEditIndex');
-        const prizesTableBody = document.getElementById('prizesTable').getElementsByTagName('tbody')[0];
-        
-        const participantsTableBody = document.getElementById('participantsTable').getElementsByTagName('tbody')[0];
-        const exportCsvBtn = document.getElementById('exportCsvBtn');
-        const resetPrizesQuantityBtn = document.getElementById('resetPrizesQuantityBtn');
-        const clearParticipantsBtn = document.getElementById('clearParticipantsBtn');
+        var adminCompanyLogoFileInput;
+        var adminRouletteLogoFileInput;
+
+        var saveAdminSettingsBtn = document.getElementById('saveAdminSettingsBtn');
+        var companyLogoElement = document.getElementById('companyLogo');
+
+        var prizeForm = document.getElementById('prizeForm');
+        var prizeTextAdminInput = document.getElementById('prizeTextAdmin');
+        var prizeColorAdminInput = document.getElementById('prizeColorAdmin');
+        var prizeProbabilityAdminInput = document.getElementById('prizeProbabilityAdmin');
+        var prizeQuantityAdminInput = document.getElementById('prizeQuantityAdmin');
+        var prizeEditIndexInput = document.getElementById('prizeEditIndex');
+        var prizesTableBody = document.getElementById('prizesTable').getElementsByTagName('tbody')[0];
+
+        var participantsTableBody = document.getElementById('participantsTable').getElementsByTagName('tbody')[0];
+        var exportCsvBtn = document.getElementById('exportCsvBtn');
+        var resetPrizesQuantityBtn = document.getElementById('resetPrizesQuantityBtn');
+        var clearParticipantsBtn = document.getElementById('clearParticipantsBtn');
 
         // Idle timer variables
-        let idleTimer = null;
-        const IDLE_TIMEOUT_MS = 180000; // 3 minutes
+        var idleTimer = null;
+        var IDLE_TIMEOUT_MS = 180000; // 3 minutes
 
         // Utility function for debouncing
         function debounce(func, delay) {
-            let timeout;
-            return function(...args) {
+            var timeout;
+            return function() {
+                var context = this;
+                var args = arguments;
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
+                timeout = setTimeout(function() {
+                    func.apply(context, args);
+                }, delay);
             };
         }
 
         // Toast Notification Function
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+        function showToast(message, type) {
+            if (type === undefined) {
+                type = 'success';
+            }
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
             toast.textContent = message;
-            
+
             container.appendChild(toast);
-            
-            setTimeout(() => {
+
+            setTimeout(function() {
                 toast.classList.add('show');
             }, 100);
 
-            setTimeout(() => {
+            setTimeout(function() {
                 toast.classList.remove('show');
-                setTimeout(() => {
+                setTimeout(function() {
                     if (container.contains(toast)) {
                         container.removeChild(toast);
                     }
@@ -988,30 +1050,30 @@
         }
 
         // Global state variables
-        let isWheelOnlyModeActive = false;
-        let formSectionDisplayBeforeAdmin = 'block'; // Default initial state for form
-        let wheelSectionDisplayBeforeAdmin = 'none'; // Default initial state for wheel
+        var isWheelOnlyModeActive = false;
+        var formSectionDisplayBeforeAdmin = 'block'; // Default initial state for form
+        var wheelSectionDisplayBeforeAdmin = 'none'; // Default initial state for wheel
 
         // Setup listeners for idle detection
         function setupIdleListeners() {
-            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-            
-            events.forEach(event => {
+            var events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+            events.forEach(function(event) {
                 document.addEventListener(event, resetIdleTimer, { passive: true });
             });
-            
+
             resetIdleTimer();
         }
 
         // Reset the idle timer
         function resetIdleTimer() {
             clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                const formSection = document.getElementById('formSection');
-                
+            idleTimer = setTimeout(function() {
+                var formSection = document.getElementById('formSection');
+
                 if (formSection.style.display === 'none') {
                     showToast('Reiniciando por inactividad...', 'warning');
-                    setTimeout(() => {
+                    setTimeout(function() {
                         resetForm();
                         if (isSpinning) {
                             isSpinning = false;
@@ -1019,16 +1081,17 @@
                                 canvasWheel.style.transition = 'none';
                             }
                         }
-                        formSection.style.display = 'block';                        const wheelOnlyBtn = document.getElementById('wheelOnlyBtn');
+                        formSection.style.display = 'block';
+                        var wheelOnlyBtn = document.getElementById('wheelOnlyBtn');
                         if (wheelOnlyBtn) {
                             wheelOnlyBtn.classList.remove('form-mode');
                         }
-                        
-                        const wheelSection = document.getElementById('wheelSection');
+
+                        var wheelSection = document.getElementById('wheelSection');
                         if (wheelSection) {
                             wheelSection.style.display = 'none';
                         }
-                          setTimeout(() => {
+                          setTimeout(function() {
                             if (typeof resizeWheel === 'function') {
                                 resizeWheel();
                             }
@@ -1039,14 +1102,16 @@
                     }, 1500);
                 }
             }, IDLE_TIMEOUT_MS);
-        }        // Initial listeners setup
-        window.addEventListener('DOMContentLoaded', () => {
+        }
+
+        // Initial listeners setup
+        window.addEventListener('DOMContentLoaded', function() {
             // Set up image upload event listeners
-            const adminCompanyLogoFileInput = document.getElementById('adminCompanyLogoFile');
-            const adminRouletteLogoFileInput = document.getElementById('adminRouletteLogoFile');
-            const adminHeaderImageFileInput = document.getElementById('adminHeaderImageFile');
-            const adminGifImageFileInput = document.getElementById('adminGifImageFile');
-            const adminCenterLogoFileInput = document.getElementById('adminCenterLogoFile');
+            var adminCompanyLogoFileInput = document.getElementById('adminCompanyLogoFile');
+            var adminRouletteLogoFileInput = document.getElementById('adminRouletteLogoFile');
+            var adminHeaderImageFileInput = document.getElementById('adminHeaderImageFile');
+            var adminGifImageFileInput = document.getElementById('adminGifImageFile');
+            var adminCenterLogoFileInput = document.getElementById('adminCenterLogoFile');
 
             // Add change listeners for file inputs
             if (adminCompanyLogoFileInput) {
@@ -1060,11 +1125,14 @@
             }
             if (adminGifImageFileInput) {
                 adminGifImageFileInput.addEventListener('change', handleCompanyLogoUpload);
-            }            if (adminCenterLogoFileInput) {
+            }
+            if (adminCenterLogoFileInput) {
                 adminCenterLogoFileInput.addEventListener('change', handleRouletteLogoUpload);
-            }            // Set up wheel customization event listeners
+            }
+
+            // Set up wheel customization event listeners
             setupWheelCustomizationListeners();
-            
+
             // Load saved wheel customization settings
             loadWheelCustomizationSettings();
 
@@ -1083,7 +1151,7 @@
             if (formSection) formSection.style.display = 'block';
             if (wheelSection) wheelSection.style.display = 'none';
             if (adminSection) adminSection.style.display = 'none';
-            
+
             renderPrizesTable(); // Populate admin prizes table
             renderParticipantsTable(); // Populate admin participants table
 
@@ -1098,8 +1166,8 @@
             setupIdleListeners(); // Setup existing idle listeners
             resetIdleTimer();     // Start/reset the idle timer
         });
-        
-        closeModalBtn.addEventListener('click', () => {
+
+        closeModalBtn.addEventListener('click', function() {
             prizeModal.style.display = 'none';
             resetForm(); // Return to the form screen
         });
@@ -1126,14 +1194,16 @@
                 wheelSection.style.display = 'flex'; // Or 'block', depending on your CSS for .wheel-section
                 adminSection.style.display = 'none'; // Ensure admin is hidden
                 isWheelOnlyModeActive = true;
-                if (wheelOnlyBtn) wheelOnlyBtn.classList.add('active');                // Ensure wheel is sized and drawn correctly with enhanced mobile delay
-                const mobileDelay = window.innerWidth <= 768 ? 100 : 50;
-                setTimeout(() => {
+                if (wheelOnlyBtn) wheelOnlyBtn.classList.add('active');
+                // Ensure wheel is sized and drawn correctly with enhanced mobile delay
+                var mobileDelay = window.innerWidth <= 768 ? 100 : 50;
+                setTimeout(function() {
                     if (typeof resizeWheel === 'function') resizeWheel();
                     if (typeof drawWheel === 'function') drawWheel();
                 }, mobileDelay);
             }
         }
+
         // Initialize wheel with High-DPI support
         function initWheel() {
             canvasWheel = document.getElementById('wheel');
@@ -1141,31 +1211,33 @@
                 console.error("Wheel canvas element not found");
                 return;
             }
-            
+
             ctxWheel = canvasWheel.getContext('2d');
             if (!ctxWheel) {
                 console.error("Could not get wheel canvas context");
                 return;
             }
-            
+
             // Setup high DPI canvas
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvasWheel.getBoundingClientRect();
+            var dpr = window.devicePixelRatio || 1;
+            var rect = canvasWheel.getBoundingClientRect();
             canvasWheel.width = rect.width * dpr;
             canvasWheel.height = rect.height * dpr;
             canvasWheel.style.width = rect.width + 'px';
             canvasWheel.style.height = rect.height + 'px';
             ctxWheel.scale(dpr, dpr);
-              // Load the center logo
-            rouletteCenterLogoImg = new Image();            rouletteCenterLogoImg.onload = function() {
+
+            // Load the center logo
+            rouletteCenterLogoImg = new Image();
+            rouletteCenterLogoImg.onload = function() {
                 drawWheel();
             };
             rouletteCenterLogoImg.onerror = function() {
                 drawWheel();
             };
-            
+
             try {
-                const rouletteLogoDataUrl = localStorage.getItem('adminRouletteLogoDataUrl');
+                var rouletteLogoDataUrl = localStorage.getItem('adminRouletteLogoDataUrl');
                 if (rouletteLogoDataUrl) {
                     rouletteCenterLogoImg.src = rouletteLogoDataUrl;
                 } else {
@@ -1174,38 +1246,44 @@
             } catch (e) {
                 console.error("Error loading roulette logo from localStorage:", e);
                 rouletteCenterLogoImg.src = 'QuartzLUBS-2.png';
-            }            // Initial sizing
+            }
+
+            // Initial sizing
             resizeWheel();
-              // Enhanced resize handler with debouncing
+
+            // Enhanced resize handler with debouncing
             window.addEventListener('resize', debouncedResizeHandler, { passive: true });
-              // Force initial draw even if logo hasn't loaded yet
-            setTimeout(() => {
+
+            // Force initial draw even if logo hasn't loaded yet
+            setTimeout(function() {
                 drawWheel();
             }, 100);
-        }        // Enhanced resize function with size constraints
+        }
+
+        // Enhanced resize function with size constraints
         function resizeWheel() {
-            const container = document.querySelector('.wheel-container');
+            var container = document.querySelector('.wheel-container');
             if (!container || !canvasWheel) return;
-            
+
             // Get container dimensions
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            
+            var containerWidth = container.clientWidth;
+            var containerHeight = container.clientHeight;
+
             // Get container padding to ensure wheel fits within the border
-            const containerStyle = window.getComputedStyle(container);
-            const paddingLeft = parseFloat(containerStyle.paddingLeft);
-            const paddingRight = parseFloat(containerStyle.paddingRight);
-            const paddingTop = parseFloat(containerStyle.paddingTop);
-            const paddingBottom = parseFloat(containerStyle.paddingBottom);
-            
+            var containerStyle = window.getComputedStyle(container);
+            var paddingLeft = parseFloat(containerStyle.paddingLeft);
+            var paddingRight = parseFloat(containerStyle.paddingRight);
+            var paddingTop = parseFloat(containerStyle.paddingTop);
+            var paddingBottom = parseFloat(containerStyle.paddingBottom);
+
             // Calculate available space inside the padding
-            const availableWidth = containerWidth - paddingLeft - paddingRight;
-            const availableHeight = containerHeight - paddingTop - paddingBottom;
-            
-            let wheelSize = Math.min(availableWidth, availableHeight);
-            
+            var availableWidth = containerWidth - paddingLeft - paddingRight;
+            var availableHeight = containerHeight - paddingTop - paddingBottom;
+
+            var wheelSize = Math.min(availableWidth, availableHeight);
+
             // Apply size constraints based on screen size
-            const screenWidth = window.innerWidth;
+            var screenWidth = window.innerWidth;
             if (screenWidth <= 320) {
                 wheelSize = Math.max(240, Math.min(wheelSize, 280));
             } else if (screenWidth <= 480) {
@@ -1219,58 +1297,62 @@
             } else {
                 wheelSize = Math.max(600, Math.min(wheelSize, 800));
             }
-            
+
             // Update global wheelSize variable
             window.wheelSize = wheelSize;
-            
+
             // Update canvas dimensions
-            canvasWheel.style.width = `${wheelSize}px`;
-            canvasWheel.style.height = `${wheelSize}px`;
-            
+            canvasWheel.style.width = wheelSize + 'px';
+            canvasWheel.style.height = wheelSize + 'px';
+
             // Account for high-DPI displays
-            const dpr = window.devicePixelRatio || 1;
+            var dpr = window.devicePixelRatio || 1;
             canvasWheel.width = wheelSize * dpr;
             canvasWheel.height = wheelSize * dpr;
-            
+
             // Reset the context and scale only once
             ctxWheel.setTransform(1, 0, 0, 1, 0, 0); // Reset any existing transforms
             ctxWheel.scale(dpr, dpr);
-            
+
             // Set wheel center coordinates
             wheelCenterX = wheelSize / 2;
             wheelCenterY = wheelSize / 2;
         }
 
         // Create debounced resize handler
-        const debouncedResizeHandler = debounce(() => {
+        var debouncedResizeHandler = debounce(function() {
             resizeWheel();
-            drawWheel();        }, 250);        function drawWheel() {
+            drawWheel();
+        }, 250);
+
+        function drawWheel() {
             if (!ctxWheel) {
                 console.error("Canvas context not available");
                 return;
             }
-            
+
             if (prizes.length === 0) {
                 return;
             }
-            
+
             // Ensure wheelSize is properly set
             if (!window.wheelSize) {
                 resizeWheel();
             }
-            
-            const radius = window.wheelSize / 2;
-            const sliceAngle = (2 * Math.PI) / prizes.length;
-            
+
+            var radius = window.wheelSize / 2;
+            var sliceAngle = (2 * Math.PI) / prizes.length;
+
             // Update wheel center coordinates
             wheelCenterX = window.wheelSize / 2;
             wheelCenterY = window.wheelSize / 2;
-            
+
             ctxWheel.clearRect(0, 0, window.wheelSize, window.wheelSize);
-              // Adaptive font sizing based on wheel size and screen
-            const screenWidth = window.innerWidth;
-            let baseFontSize = radius * 0.06;
-            
+
+            // Adaptive font sizing based on wheel size and screen
+            var screenWidth = window.innerWidth;
+            var baseFontSize = radius * 0.06;
+
             // Adjust font size for different screen sizes
             if (screenWidth <= 320) {
                 baseFontSize = Math.max(10, radius * 0.08);
@@ -1279,61 +1361,61 @@
             } else if (screenWidth <= 768) {
                 baseFontSize = Math.max(14, radius * 0.065);
             }
-            
+
             // Apply text scale customization
-            const textScale = getComputedStyle(document.documentElement).getPropertyValue('--wheel-text-scale') || 1;
+            var textScale = getComputedStyle(document.documentElement).getPropertyValue('--wheel-text-scale') || 1;
             baseFontSize = baseFontSize * parseFloat(textScale);
-            
+
             // Draw each slice of the wheel
-            for (let i = 0; i < prizes.length; i++) {
-                const startAngle = i * sliceAngle;
-                const endAngle = (i + 1) * sliceAngle;
-                
+            for (var i = 0; i < prizes.length; i++) {
+                var startAngle = i * sliceAngle;
+                var endAngle = (i + 1) * sliceAngle;
+
                 ctxWheel.beginPath();
                 ctxWheel.moveTo(wheelCenterX, wheelCenterY);
                 ctxWheel.arc(wheelCenterX, wheelCenterY, radius, startAngle, endAngle);
                 ctxWheel.closePath();
-                
+
                 // Use predefined wheel colors in sequence
-                const colorIndex = i % wheelColors.length;
+                var colorIndex = i % wheelColors.length;
                 ctxWheel.fillStyle = wheelColors[colorIndex];
                 ctxWheel.fill();
-                
+
                 ctxWheel.lineWidth = 2;
                 ctxWheel.strokeStyle = '#FFFFFF';
                 ctxWheel.stroke();
-                
+
                 // Add prize text with adaptive sizing
                 ctxWheel.save();
                 ctxWheel.translate(wheelCenterX, wheelCenterY);
                 ctxWheel.rotate(startAngle + sliceAngle / 2);
-                
+
                 ctxWheel.textAlign = 'right';
                 ctxWheel.textBaseline = 'middle';
                 ctxWheel.fillStyle = '#FFFFFF';
-                ctxWheel.font = `bold ${baseFontSize}px Arial`;
+                ctxWheel.font = 'bold ' + baseFontSize + 'px Arial';
                 ctxWheel.shadowColor = 'rgba(0,0,0,0.5)';
                 ctxWheel.shadowBlur = 3;
                 ctxWheel.shadowOffsetX = 1;
                 ctxWheel.shadowOffsetY = 1;
-                
-                const textRadius = radius * 0.8;
-                let maxTextWidth = radius * 0.5;
-                
+
+                var textRadius = radius * 0.8;
+                var maxTextWidth = radius * 0.5;
+
                 // Adjust text width for smaller screens
                 if (screenWidth <= 480) {
                     maxTextWidth = radius * 0.45;
                 }
-                
+
                 // Enhanced text wrapping function
                 function wrapText(context, text, x, y, maxWidth, lineHeight) {
-                    const words = text.split(' ');
-                    let line = '';
-                    let testLine = '';
-                    let metrics;
-                    let testWidth;
+                    var words = text.split(' ');
+                    var line = '';
+                    var testLine = '';
+                    var metrics;
+                    var testWidth;
 
-                    for (let n = 0; n < words.length; n++) {
+                    for (var n = 0; n < words.length; n++) {
                         testLine = line + words[n] + ' ';
                         metrics = context.measureText(testLine);
                         testWidth = metrics.width;
@@ -1349,14 +1431,14 @@
                         context.fillText(line.trim(), x, y);
                     }
                 }
-                
+
                 // Adaptive line height
-                const lineHeight = Math.max(baseFontSize * 1.2, radius * 0.07);
+                var lineHeight = Math.max(baseFontSize * 1.2, radius * 0.07);
                 wrapText(ctxWheel, prizes[i].text, textRadius, 0, maxTextWidth, lineHeight);
-                
+
                 ctxWheel.restore();
             }
-            
+
             // Draw center circle
             ctxWheel.beginPath();
             ctxWheel.arc(wheelCenterX, wheelCenterY, radius * 0.2, 0, 2 * Math.PI);
@@ -1365,34 +1447,35 @@
             ctxWheel.strokeStyle = '#FFFFFF00';
             ctxWheel.lineWidth = 3;
             ctxWheel.stroke();
-            
+
             // Draw center logo with adaptive sizing
             if (rouletteCenterLogoImg && rouletteCenterLogoImg.complete) {
-                let logoSize = radius * 0.18;
-                
+                var logoSize = radius * 0.18;
+
                 // Adjust logo size for very small screens
                 if (screenWidth <= 320) {
                     logoSize = radius * 0.15;
                 } else if (screenWidth <= 480) {
                     logoSize = radius * 0.16;
                 }
-                
+
                 ctxWheel.save();
                 ctxWheel.beginPath();
                 ctxWheel.arc(wheelCenterX, wheelCenterY, logoSize, 0, Math.PI * 2, true);
                 ctxWheel.closePath();
                 ctxWheel.clip();
-                
+
                 ctxWheel.drawImage(
                     rouletteCenterLogoImg,
-                    wheelCenterX - logoSize, 
+                    wheelCenterX - logoSize,
                     wheelCenterY - logoSize,
-                    logoSize * 2, 
+                    logoSize * 2,
                     logoSize * 2
                 );
                 ctxWheel.restore();
             }
-              // Draw wheel pointer
+
+            // Draw wheel pointer
             ctxWheel.beginPath();
             ctxWheel.moveTo(wheelCenterX, wheelCenterY - radius - 10);
             ctxWheel.lineTo(wheelCenterX - 15, wheelCenterY - radius + 20);
@@ -1403,13 +1486,15 @@
             ctxWheel.strokeStyle = '#FFFFFF';
             ctxWheel.lineWidth = 2;
             ctxWheel.stroke();
-        }// Admin Panel Toggle with password
+        }
+
+        // Admin Panel Toggle with password
         adminToggleBtn.addEventListener('click', function() {
             if (adminSection.style.display === 'none' || adminSection.style.display === '') {
                 // Store current states before showing admin panel
                 formSectionDisplayBeforeAdmin = formSection.style.display;
                 wheelSectionDisplayBeforeAdmin = wheelSection.style.display;
-                
+
                 // Show password modal
                 passwordAdminModal.style.display = 'flex';
                 adminPasswordInput.value = '';
@@ -1418,32 +1503,36 @@
                 // Hide admin panel and restore previous view
                 adminSection.style.display = 'none';
                 if(adminToggleBtn) adminToggleBtn.classList.remove('active');
-                
+
                 // Restore the previous state based on stored values
                 formSection.style.display = formSectionDisplayBeforeAdmin;
-                wheelSection.style.display = wheelSectionDisplayBeforeAdmin;                // If wheel was supposed to be visible, redraw it with enhanced mobile delay
+                wheelSection.style.display = wheelSectionDisplayBeforeAdmin;
+
+                // If wheel was supposed to be visible, redraw it with enhanced mobile delay
                 if (wheelSectionDisplayBeforeAdmin === 'flex' || wheelSectionDisplayBeforeAdmin === 'block') {
-                    const mobileDelay = window.innerWidth <= 768 ? 100 : 50;
-                    setTimeout(() => {
+                    var mobileDelay = window.innerWidth <= 768 ? 100 : 50;
+                    setTimeout(function() {
                         if (typeof resizeWheel === 'function') resizeWheel();
                         if (typeof drawWheel === 'function') drawWheel();
                     }, mobileDelay);
                 }
                 resetIdleTimer();
             }
-        });        submitAdminPasswordBtn.addEventListener('click', () => {
-            const password = adminPasswordInput.value;
+        });
+
+        submitAdminPasswordBtn.addEventListener('click', function() {
+            var password = adminPasswordInput.value;
             if (password === "WW@TE2025") {
                 passwordAdminModal.style.display = 'none';
-                
+
                 // Show admin panel and hide others
                 adminSection.style.display = 'block';
                 formSection.style.display = 'none';
                 wheelSection.style.display = 'none';
-                
+
                 // Update admin button visual state
                 adminToggleBtn.classList.add('active');
-                
+
                 showToast("Panel de administración desbloqueado", "success");
             } else {
                 showToast("Contraseña incorrecta.", "error");
@@ -1457,28 +1546,32 @@
                 event.preventDefault();
                 submitAdminPasswordBtn.click();
             }
-        });        cancelAdminPasswordBtn.addEventListener('click', () => {
+        });
+
+        cancelAdminPasswordBtn.addEventListener('click', function() {
             passwordAdminModal.style.display = 'none';
             // Restore the view that was active before trying to open admin
             formSection.style.display = formSectionDisplayBeforeAdmin;
             wheelSection.style.display = wheelSectionDisplayBeforeAdmin;
             if (wheelSectionDisplayBeforeAdmin === 'flex' || wheelSectionDisplayBeforeAdmin === 'block') {
-                const mobileDelay = window.innerWidth <= 768 ? 100 : 50;
-                setTimeout(() => {
+                var mobileDelay = window.innerWidth <= 768 ? 100 : 50;
+                setTimeout(function() {
                     if (typeof resizeWheel === 'function') resizeWheel();
                     if (typeof drawWheel === 'function') drawWheel();
                 }, mobileDelay);
             }
             resetIdleTimer();
-        });        window.addEventListener('click', (event) => {
+        });
+
+        window.addEventListener('click', function(event) {
             if (event.target == passwordAdminModal) {
                 passwordAdminModal.style.display = 'none';
                 // Restore the view
                 formSection.style.display = formSectionDisplayBeforeAdmin;
                 wheelSection.style.display = wheelSectionDisplayBeforeAdmin;
                 if (wheelSectionDisplayBeforeAdmin === 'flex' || wheelSectionDisplayBeforeAdmin === 'block') {
-                    const mobileDelay = window.innerWidth <= 768 ? 100 : 50;
-                    setTimeout(() => {
+                    var mobileDelay = window.innerWidth <= 768 ? 100 : 50;
+                    setTimeout(function() {
                         if (typeof resizeWheel === 'function') resizeWheel();
                         if (typeof drawWheel === 'function') drawWheel();
                     }, mobileDelay);
@@ -1491,7 +1584,7 @@
         });
 
         // Save Admin Settings
-        saveAdminSettingsBtn.addEventListener('click', () => {
+        saveAdminSettingsBtn.addEventListener('click', function() {
             try {
                 showToast('Configuración guardada!');
             } catch (e) {
@@ -1502,9 +1595,9 @@
 
         // Handle Company Logo Upload
         function handleCompanyLogoUpload(event) {
-            const file = event.target.files[0];
+            var file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         localStorage.setItem('adminCompanyLogoDataUrl', e.target.result);
@@ -1522,18 +1615,18 @@
 
         // Handle Roulette Logo Upload
         function handleRouletteLogoUpload(event) {
-            const file = event.target.files[0];
+            var file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         localStorage.setItem('adminRouletteLogoDataUrl', e.target.result);
                         rouletteCenterLogoImg = new Image();
-                        rouletteCenterLogoImg.onload = () => {
+                        rouletteCenterLogoImg.onload = function() {
                             drawWheel();
                             showToast('Logo de ruleta actualizado.');
                         };
-                        rouletteCenterLogoImg.onerror = () => {
+                        rouletteCenterLogoImg.onerror = function() {
                             rouletteCenterLogoImg = null;
                             drawWheel();
                             showToast('Error al cargar imagen de logo para ruleta.', 'error');
@@ -1545,40 +1638,41 @@
                     }
                 }
                 reader.readAsDataURL(file);
-            }        }
-        
+            }
+        }
+
         // Wheel Customization Functions
         function setupWheelCustomizationListeners() {
-            const wheelSizeSlider = document.getElementById('adminWheelSize');
-            const borderWidthSlider = document.getElementById('adminWheelBorderWidth');
-            const borderColorInput = document.getElementById('adminWheelBorderColor');
-            const bgOpacitySlider = document.getElementById('adminWheelBgOpacity');
-            const pointerColorInput = document.getElementById('adminPointerColor');
-            const textSizeSlider = document.getElementById('adminTextSize');
-            const applyBtn = document.getElementById('applyWheelCustomization');
-            const resetBtn = document.getElementById('resetWheelDefaults');
+            var wheelSizeSlider = document.getElementById('adminWheelSize');
+            var borderWidthSlider = document.getElementById('adminWheelBorderWidth');
+            var borderColorInput = document.getElementById('adminWheelBorderColor');
+            var bgOpacitySlider = document.getElementById('adminWheelBgOpacity');
+            var pointerColorInput = document.getElementById('adminPointerColor');
+            var textSizeSlider = document.getElementById('adminTextSize');
+            var applyBtn = document.getElementById('applyWheelCustomization');
+            var resetBtn = document.getElementById('resetWheelDefaults');
 
             // Update display values for sliders
             if (wheelSizeSlider) {
-                wheelSizeSlider.addEventListener('input', (e) => {
+                wheelSizeSlider.addEventListener('input', function(e) {
                     document.getElementById('wheelSizeValue').textContent = e.target.value + '%';
                 });
             }
 
             if (borderWidthSlider) {
-                borderWidthSlider.addEventListener('input', (e) => {
+                borderWidthSlider.addEventListener('input', function(e) {
                     document.getElementById('borderWidthValue').textContent = e.target.value + 'px';
                 });
             }
 
             if (bgOpacitySlider) {
-                bgOpacitySlider.addEventListener('input', (e) => {
+                bgOpacitySlider.addEventListener('input', function(e) {
                     document.getElementById('bgOpacityValue').textContent = e.target.value + '%';
                 });
             }
 
             if (textSizeSlider) {
-                textSizeSlider.addEventListener('input', (e) => {
+                textSizeSlider.addEventListener('input', function(e) {
                     document.getElementById('textSizeValue').textContent = e.target.value + '%';
                 });
             }
@@ -1598,32 +1692,32 @@
         }
 
         function applyWheelCustomization() {
-            const wheelSize = document.getElementById('adminWheelSize').value;
-            const borderWidth = document.getElementById('adminWheelBorderWidth').value;
-            const borderColor = document.getElementById('adminWheelBorderColor').value;
-            const bgOpacity = document.getElementById('adminWheelBgOpacity').value;
-            const pointerColor = document.getElementById('adminPointerColor').value;
-            const textSize = document.getElementById('adminTextSize').value;
+            var wheelSize = document.getElementById('adminWheelSize').value;
+            var borderWidth = document.getElementById('adminWheelBorderWidth').value;
+            var borderColor = document.getElementById('adminWheelBorderColor').value;
+            var bgOpacity = document.getElementById('adminWheelBgOpacity').value;
+            var pointerColor = document.getElementById('adminPointerColor').value;
+            var textSize = document.getElementById('adminTextSize').value;
 
             // Save settings to localStorage
             localStorage.setItem('wheelCustomization', JSON.stringify({
-                wheelSize,
-                borderWidth,
-                borderColor,
-                bgOpacity,
-                pointerColor,
-                textSize
+                wheelSize: wheelSize,
+                borderWidth: borderWidth,
+                borderColor: borderColor,
+                bgOpacity: bgOpacity,
+                pointerColor: pointerColor,
+                textSize: textSize
             }));
 
             // Apply to CSS
-            const wheelContainer = document.querySelector('.wheel-container');
+            var wheelContainer = document.querySelector('.wheel-container');
             if (wheelContainer) {
-                wheelContainer.style.maxWidth = `${6 * (wheelSize / 100)}px`;
-                wheelContainer.style.maxHeight = `${6 * (wheelSize / 100)}px`;
-                wheelContainer.style.padding = `${borderWidth}px`;
-                wheelContainer.style.background = `rgba(255, 255, 255, ${bgOpacity / 100})`;
+                wheelContainer.style.maxWidth = (6 * (wheelSize / 100)) + 'px';
+                wheelContainer.style.maxHeight = (6 * (wheelSize / 100)) + 'px';
+                wheelContainer.style.padding = borderWidth + 'px';
+                wheelContainer.style.background = 'rgba(255, 255, 255, ' + (bgOpacity / 100) + ')';
                 if (borderWidth > 0) {
-                    wheelContainer.style.border = `${Math.max(1, borderWidth / 2)}px solid ${borderColor}`;
+                    wheelContainer.style.border = Math.max(1, borderWidth / 2) + 'px solid ' + borderColor;
                 }
             }
 
@@ -1658,7 +1752,7 @@
             localStorage.removeItem('wheelCustomization');
 
             // Reset CSS
-            const wheelContainer = document.querySelector('.wheel-container');
+            var wheelContainer = document.querySelector('.wheel-container');
             if (wheelContainer) {
                 wheelContainer.style.maxWidth = '600px';
                 wheelContainer.style.maxHeight = '600px';
@@ -1678,10 +1772,10 @@
 
         function loadWheelCustomizationSettings() {
             try {
-                const saved = localStorage.getItem('wheelCustomization');
+                var saved = localStorage.getItem('wheelCustomization');
                 if (saved) {
-                    const settings = JSON.parse(saved);
-                    
+                    var settings = JSON.parse(saved);
+
                     document.getElementById('adminWheelSize').value = settings.wheelSize || 100;
                     document.getElementById('adminWheelBorderWidth').value = settings.borderWidth || 10;
                     document.getElementById('adminWheelBorderColor').value = settings.borderColor || '#ffffff';
@@ -1696,15 +1790,15 @@
                     document.getElementById('textSizeValue').textContent = (settings.textSize || 100) + '%';
 
                     // Apply the settings without showing toast
-                    setTimeout(() => {
-                        const wheelContainer = document.querySelector('.wheel-container');
+                    setTimeout(function() {
+                        var wheelContainer = document.querySelector('.wheel-container');
                         if (wheelContainer) {
-                            wheelContainer.style.maxWidth = `${6 * ((settings.wheelSize || 100) / 100)}px`;
-                            wheelContainer.style.maxHeight = `${6 * ((settings.wheelSize || 100) / 100)}px`;
-                            wheelContainer.style.padding = `${settings.borderWidth || 10}px`;
-                            wheelContainer.style.background = `rgba(255, 255, 255, ${(settings.bgOpacity || 70) / 100})`;
+                            wheelContainer.style.maxWidth = (6 * ((settings.wheelSize || 100) / 100)) + 'px';
+                            wheelContainer.style.maxHeight = (6 * ((settings.wheelSize || 100) / 100)) + 'px';
+                            wheelContainer.style.padding = (settings.borderWidth || 10) + 'px';
+                            wheelContainer.style.background = 'rgba(255, 255, 255, ' + ((settings.bgOpacity || 70) / 100) + ')';
                             if ((settings.borderWidth || 10) > 0) {
-                                wheelContainer.style.border = `${Math.max(1, (settings.borderWidth || 10) / 2)}px solid ${settings.borderColor || '#ffffff'}`;
+                                wheelContainer.style.border = Math.max(1, (settings.borderWidth || 10) / 2) + 'px solid ' + (settings.borderColor || '#ffffff');
                             }
                         }
 
@@ -1719,32 +1813,32 @@
                 console.error('Error loading wheel customization settings:', e);
             }
         }
-        
+
         // Prize Management
-        prizeForm.addEventListener('submit', (e) => {
+        prizeForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const text = prizeTextAdminInput.value.trim();
-            const color = prizeColorAdminInput.value;
-            const probability = parseInt(prizeProbabilityAdminInput.value);
-            const quantity = parseInt(prizeQuantityAdminInput.value);
-            const editIndex = prizeEditIndexInput.value;
+            var text = prizeTextAdminInput.value.trim();
+            var color = prizeColorAdminInput.value;
+            var probability = parseInt(prizeProbabilityAdminInput.value);
+            var quantity = parseInt(prizeQuantityAdminInput.value);
+            var editIndex = prizeEditIndexInput.value;
 
             if (!text || probability <= 0) {
                 showToast("Por favor, completa el nombre del premio y asegúrate que la probabilidad sea mayor a 0.", "warning");
                 return;
             }
 
-            const newPrize = { text, color, probability, quantity, initialQuantity: quantity };
+            var newPrize = { text: text, color: color, probability: probability, quantity: quantity, initialQuantity: quantity };
 
             if (editIndex === "") {
                 prizes.push(newPrize);
             } else {
                 prizes[parseInt(editIndex)] = newPrize;
             }
-            
+
             savePrizes();
             renderPrizesTable();
-            drawWheel(); 
+            drawWheel();
             prizeForm.reset();
             prizeColorAdminInput.value = "#ff0000";
             prizeQuantityAdminInput.value = "10";
@@ -1754,36 +1848,36 @@
         });
 
         function renderPrizesTable() {
-            prizesTableBody.innerHTML = ""; 
-            prizes.forEach((prize, index) => {
-                const row = prizesTableBody.insertRow();
+            prizesTableBody.innerHTML = "";
+            prizes.forEach(function(prize, index) {
+                var row = prizesTableBody.insertRow();
                 row.insertCell().textContent = prize.text;
-                
-                const colorCell = row.insertCell();
+
+                var colorCell = row.insertCell();
                 colorCell.style.backgroundColor = prize.color;
-                const textColor = getContrastYIQ(prize.color);
+                var textColor = getContrastYIQ(prize.color);
                 colorCell.style.color = textColor;
                 colorCell.textContent = prize.color;
 
                 row.insertCell().textContent = prize.probability;
-                row.insertCell().textContent = prize.quantity === 0 ? "Ilimitado" : `${prize.quantity}/${prize.initialQuantity}`;
-                
-                const actionsCell = row.insertCell();
-                const editBtn = document.createElement('button');
+                row.insertCell().textContent = prize.quantity === 0 ? "Ilimitado" : prize.quantity + '/' + prize.initialQuantity;
+
+                var actionsCell = row.insertCell();
+                var editBtn = document.createElement('button');
                 editBtn.textContent = 'Editar';
                 editBtn.classList.add('btn', 'action-btn');
-                editBtn.onclick = () => editPrize(index);
+                editBtn.onclick = function() { editPrize(index); };
                 actionsCell.appendChild(editBtn);
-                
-                const deleteBtn = document.createElement('button');
+
+                var deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Eliminar';
                 deleteBtn.classList.add('btn', 'action-btn');
                 deleteBtn.style.backgroundColor = '#f44336';
-                deleteBtn.onclick = () => deletePrize(index);
+                deleteBtn.onclick = function() { deletePrize(index); };
                 actionsCell.appendChild(deleteBtn);
             });
         }
-        
+
         function getContrastYIQ(hexcolor){
             hexcolor = hexcolor.replace("#", "");
             var r = parseInt(hexcolor.substr(0,2),16);
@@ -1794,7 +1888,7 @@
         }
 
         function editPrize(index) {
-            const prize = prizes[index];
+            var prize = prizes[index];
             prizeTextAdminInput.value = prize.text;
             prizeColorAdminInput.value = prize.color;
             prizeProbabilityAdminInput.value = prize.probability;
@@ -1804,7 +1898,7 @@
         }
 
         function deletePrize(index) {
-            if (confirm(`¿Seguro que quieres eliminar el premio "${prizes[index].text}"?`)) {
+            if (confirm('¿Seguro que quieres eliminar el premio "' + prizes[index].text + '"?')) {
                 prizes.splice(index, 1);
                 savePrizes();
                 renderPrizesTable();
@@ -1812,7 +1906,7 @@
                 showToast("Premio eliminado correctamente.");
             }
         }
-        
+
         function savePrizes() {
             try {
                 localStorage.setItem('roulettePrizes', JSON.stringify(prizes));
@@ -1820,12 +1914,14 @@
                 console.error("Error saving prizes:", e);
                 showToast('Error al guardar premios.', 'error');
             }
-        }        function loadPrizes() {
+        }
+
+        function loadPrizes() {
             try {
-                const storedPrizes = localStorage.getItem('roulettePrizes');
+                var storedPrizes = localStorage.getItem('roulettePrizes');
                 if (storedPrizes) {
                     prizes = JSON.parse(storedPrizes);
-                    prizes.forEach(p => {
+                    prizes.forEach(function(p) {
                         if (p.initialQuantity === undefined) {
                             p.initialQuantity = p.quantity;
                         }
@@ -1833,24 +1929,22 @@
                 } else {
                     prizes = JSON.parse(JSON.stringify(defaultPrizes));
                 }
-                
-                // Ensure we have at least one prize if something went wrong
+
                 if (!prizes || prizes.length === 0) {
                     prizes = JSON.parse(JSON.stringify(defaultPrizes));
-                    savePrizes(); // Save the default prizes
+                    savePrizes();
                 }
             } catch (e) {
                 console.error("Error loading prizes:", e);
                 prizes = JSON.parse(JSON.stringify(defaultPrizes));
-                savePrizes(); // Save the default prizes
+                savePrizes();
             }
         }
 
-        // Participant Data Management
         function renderParticipantsTable() {
             participantsTableBody.innerHTML = "";
-            participants.forEach(p => {
-                const row = participantsTableBody.insertRow();
+            participants.forEach(function(p) {
+                var row = participantsTableBody.insertRow();
                 row.insertCell().textContent = p.name;
                 row.insertCell().textContent = p.email;
                 row.insertCell().textContent = p.phone;
@@ -1871,7 +1965,7 @@
 
         function loadParticipants() {
             try {
-                const storedParticipants = localStorage.getItem('rouletteParticipants');
+                var storedParticipants = localStorage.getItem('rouletteParticipants');
                 if (storedParticipants) {
                     participants = JSON.parse(storedParticipants);
                 }
@@ -1880,8 +1974,8 @@
                 participants = [];
             }
         }
-        
-        clearParticipantsBtn.addEventListener('click', () => {
+
+        clearParticipantsBtn.addEventListener('click', function() {
             if (confirm("¿Seguro que quieres eliminar todos los datos de los participantes? Esta acción no se puede deshacer.")) {
                 participants = [];
                 saveParticipants();
@@ -1890,87 +1984,83 @@
             }
         });
 
-        exportCsvBtn.addEventListener('click', () => {
+        exportCsvBtn.addEventListener('click', function() {
             if (participants.length === 0) {
                 showToast("No hay participantes para exportar", "warning");
                 return;
             }
-            let csvContent = "data:text/csv;charset=utf-8,";
+            var csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Nombre,Correo Electrónico,Teléfono,Desea Recibir Información,Fecha,Premio Ganado\r\n";
-            participants.forEach(p => {
-                const dateFormatted = new Date(p.date).toLocaleString();
-                const prizeWon = p.prize || "N/A";
-                const subscribed = p.subscribe ? 'Sí' : 'No';
-                let row = `"${p.name}","${p.email}","${p.phone}","${subscribed}","${dateFormatted}","${prizeWon}"`;
+            participants.forEach(function(p) {
+                var dateFormatted = new Date(p.date).toLocaleString();
+                var prizeWon = p.prize || "N/A";
+                var subscribed = p.subscribe ? 'Sí' : 'No';
+                var row = '"' + p.name + '","' + p.email + '","' + p.phone + '","' + subscribed + '","' + dateFormatted + '","' + prizeWon + '"';
                 csvContent += row + "\r\n";
             });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", "participantes_ruleta.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        });        // Form Submission 
+        });
+
         participantForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const subscribe = document.getElementById('subscribe').checked;
-            
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var phone = document.getElementById('phone').value;
+            var subscribe = document.getElementById('subscribe').checked;
+
             if (!name || !email || !phone) {
                 showToast("Por favor, complete todos los campos del formulario.", "warning");
                 return;
             }
-            
-            // Add the participant to the list
-            const participant = {
+
+            var participant = {
                 id: Date.now(),
-                name, 
-                email, 
-                phone,
-                subscribe,
+                name: name,
+                email: email,
+                phone: phone,
+                subscribe: subscribe,
                 date: new Date().toISOString(),
                 prize: null
             };
-            
+
             participants.push(participant);
             saveParticipants();
             renderParticipantsTable();
-            
-            // Clear the form
+
             participantForm.reset();
-            
-            // Show loading message
+
             showToast("Cargando ruleta...", "info");
-            
-            // Direct transition to wheel view
+
             formSection.style.display = 'none';
-            adminSection.style.display = 'none'; // Ensure admin is also hidden
-            wheelSection.style.display = 'flex'; // Or 'block'
-            
-            isWheelOnlyModeActive = false; // Not in explicit wheel-only mode
-            if(wheelOnlyBtn) wheelOnlyBtn.classList.remove('active'); // Deactivate Wh button            // Size and draw the wheel with enhanced mobile delay
-            const mobileDelay = window.innerWidth <= 768 ? 100 : 50;
-            setTimeout(() => {
+            adminSection.style.display = 'none';
+            wheelSection.style.display = 'flex';
+
+            isWheelOnlyModeActive = false;
+            if(wheelOnlyBtn) wheelOnlyBtn.classList.remove('active');
+
+            var mobileDelay = window.innerWidth <= 768 ? 100 : 50;
+            setTimeout(function() {
                 if (typeof resizeWheel === 'function') resizeWheel();
                 if (typeof drawWheel === 'function') drawWheel();
             }, mobileDelay);
-            
-            // Show success message
+
             showToast("¡Datos registrados correctamente! Ahora puedes girar la ruleta.", "success");
-            
-            // Reset idle timer
+
             resetIdleTimer();
         });
-        
-        // Spin the wheel function
+
         function spinWheel() {
             if (isSpinning) return;
 
-            // Corrected filter for available prizes
-            const availablePrizes = prizes.filter(p => p.initialQuantity === 0 || p.quantity > 0);
+            var availablePrizes = prizes.filter(function(p) {
+                return p.initialQuantity === 0 || p.quantity > 0;
+            });
             if (availablePrizes.length === 0) {
                 showToast("¡Todos los premios se han agotado!", "warning");
                 resultDiv.textContent = "No quedan premios.";
@@ -1981,101 +2071,87 @@
             spinBtn.disabled = true;
             resultDiv.textContent = "Girando...";
 
-            const totalProbability = availablePrizes.reduce((sum, prize) => sum + prize.probability, 0);
-            let randomValue = Math.random() * totalProbability;
-            
-            let cumulativeProbability = 0;
-            selectedPrizeIndex = -1;
-            let actualPrizeArrayIndex = -1; 
+            var totalProbability = availablePrizes.reduce(function(sum, prize) {
+                return sum + prize.probability;
+            }, 0);
+            var randomValue = Math.random() * totalProbability;
 
-            for (let i = 0; i < availablePrizes.length; i++) {
+            var cumulativeProbability = 0;
+            selectedPrizeIndex = -1;
+            var actualPrizeArrayIndex = -1;
+
+            for (var i = 0; i < availablePrizes.length; i++) {
                 cumulativeProbability += availablePrizes[i].probability;
                 if (randomValue <= cumulativeProbability) {
-                    selectedPrizeIndex = prizes.indexOf(availablePrizes[i]); 
+                    selectedPrizeIndex = prizes.indexOf(availablePrizes[i]);
                     actualPrizeArrayIndex = i;
                     break;
                 }
             }
 
-            if (selectedPrizeIndex === -1) { 
+            if (selectedPrizeIndex === -1) {
                 selectedPrizeIndex = prizes.indexOf(availablePrizes[availablePrizes.length - 1]);
                 actualPrizeArrayIndex = availablePrizes.length - 1;
             }
-            
-            const prize = prizes[selectedPrizeIndex]; 
 
-            const numSegments = availablePrizes.length;
-            const segmentAngleDegrees = 360 / numSegments;
-            
-            // Calculate the angle to the middle of the selected segment (0 degrees is at 3 o'clock).
-            let targetAngleForSelectedSegment = (actualPrizeArrayIndex + 0.5) * segmentAngleDegrees;
-            
-            // Adjust for 12 o'clock pointer position.
-            // The 12 o'clock position is at 270 degrees in canvas coordinates (where 0 is 3 o'clock).
-            // The wheel rotates clockwise. `targetRotationDegrees` is the final absolute rotation.
-            // A feature at angle `A` on the wheel appears at `A - targetRotationDegrees` in the canvas frame.
-            // We want `targetAngleForSelectedSegment - (targetRotationDegrees % 360)` to be `270`.
-            // So, `(targetRotationDegrees % 360) = targetAngleForSelectedSegment - 270`.
-            // Revision: If wheel rotates R clockwise, a feature at A_wheel (clockwise) on wheel is now at (R + A_wheel) in page coords.
-            // We want (targetRotationDegrees % 360) + targetAngleForSelectedSegment = 270 (pointer).
-            // So, (targetRotationDegrees % 360) = 270 - targetAngleForSelectedSegment.
-            let finalAngleMod360 = (270 - targetAngleForSelectedSegment + 360) % 360;
-            
-            const randomSpins = 5 + Math.floor(Math.random() * 5); // Number of full rotations
-            const totalExtraRotation = randomSpins * 360;
+            var prize = prizes[selectedPrizeIndex];
 
-            // Calculate the new target rotation.
-            // It starts from the current rotation's base (stripping full circles), adds full random spins, and then the final angle.
-            let newTargetRotationDegrees = currentRotationDegrees - (currentRotationDegrees % 360) + totalExtraRotation + finalAngleMod360;
+            var numSegments = availablePrizes.length;
+            var segmentAngleDegrees = 360 / numSegments;
 
-            // Ensure the wheel spins forward by a noticeable amount, at least one more full rotation if the target is too close.
-            if (newTargetRotationDegrees <= currentRotationDegrees + segmentAngleDegrees) { 
-                 newTargetRotationDegrees += 360 * (1 + Math.floor(Math.random()*2)); // Add 1 to 2 more full spins
+            var targetAngleForSelectedSegment = (actualPrizeArrayIndex + 0.5) * segmentAngleDegrees;
+
+            var finalAngleMod360 = (270 - targetAngleForSelectedSegment + 360) % 360;
+
+            var randomSpins = 5 + Math.floor(Math.random() * 5);
+            var totalExtraRotation = randomSpins * 360;
+
+            var newTargetRotationDegrees = currentRotationDegrees - (currentRotationDegrees % 360) + totalExtraRotation + finalAngleMod360;
+
+            if (newTargetRotationDegrees <= currentRotationDegrees + segmentAngleDegrees) {
+                 newTargetRotationDegrees += 360 * (1 + Math.floor(Math.random()*2));
             }
-            
+
             targetRotationDegrees = newTargetRotationDegrees;
-            const spinDuration = 5; // seconds
+            var spinDuration = 5;
 
             if (canvasWheel) {
-                canvasWheel.style.transition = `transform ${spinDuration + 2}s cubic-bezier(0.25, 0.1, 0.25, 1)`;                
+                canvasWheel.style.transition = 'transform ' + (spinDuration + 2) + 's cubic-bezier(0.25, 0.1, 0.25, 1)';
                 void canvasWheel.offsetHeight;
 
-                requestAnimationFrame(() => {
-                    canvasWheel.style.transform = `rotate(${targetRotationDegrees}deg)`;
+                requestAnimationFrame(function() {
+                    canvasWheel.style.transform = 'rotate(' + targetRotationDegrees + 'deg)';
                 });
 
-                const onSpinEndHandler = () => {
+                var onSpinEndHandler = function() {
                     isSpinning = false;
                     spinBtn.disabled = false;
                     currentRotationDegrees = targetRotationDegrees;
 
-                    resultDiv.textContent = `¡Has ganado: ${prize.text}!`;
+                    resultDiv.textContent = '¡Has ganado: ' + prize.text + '!';
 
-
-                    prizeModalText.textContent = `¡Has ganado: ${prize.text}!`;
+                    prizeModalText.textContent = '¡Has ganado: ' + prize.text + '!';
                     prizeModal.style.display = 'flex';
                     createConfetti();
                     triggerFireworks();
 
-                    // Update prize quantity
-                    if (prize.initialQuantity !== 0 && prize.quantity > 0) { // Check initialQuantity for limited prizes
+                    if (prize.initialQuantity !== 0 && prize.quantity > 0) {
                         prize.quantity--;
                         savePrizes();
-                        renderPrizesTable(); // This will re-render table
-                        // drawWheel(); // drawWheel will be called if needed, e.g. by renderPrizesTable if it affects wheel appearance
+                        renderPrizesTable();
                     }
-                    
+
                     if (participants.length > 0) {
-                        const lastParticipant = participants[participants.length - 1];
-                        lastParticipant.prize = prize.text; 
+                        var lastParticipant = participants[participants.length - 1];
+                        lastParticipant.prize = prize.text;
                         saveParticipants();
                         renderParticipantsTable();
                     }
-                    
+
                     canvasWheel.removeEventListener('transitionend', onSpinEndHandler);
                     canvasWheel.style.transition = 'none';
                 };
-                
+
                 canvasWheel.addEventListener('transitionend', onSpinEndHandler);
             } else {
                 console.error("Wheel canvas element not found for spinning.");
@@ -2086,16 +2162,15 @@
             }
         }
 
-        // Helper function to wrap text for wheel segments
         function wrapTextForWheel(context, text, maxWidth) {
-            const words = text.split(' ');
+            var words = text.split(' ');
             if (words.length === 0) return [];
-            let lines = [];
-            let currentLine = words[0] || "";
+            var lines = [];
+            var currentLine = words[0] || "";
 
-            for (let i = 1; i < words.length; i++) {
-                const word = words[i];
-                const testLine = currentLine + " " + word;
+            for (var i = 1; i < words.length; i++) {
+                var word = words[i];
+                var testLine = currentLine + " " + word;
                 if (context.measureText(testLine).width < maxWidth) {
                     currentLine = testLine;
                 } else {
@@ -2103,96 +2178,99 @@
                     currentLine = word;
                 }
             }
-            if (currentLine) { // Ensure last line is pushed if not empty
+            if (currentLine) {
                 lines.push(currentLine);
             }
             return lines;
         }
 
         function createConfetti() {
-            const confettiCount = 200;
-            const confettiContainer = document.body;
-            for (let i = 0; i < confettiCount; i++) {
-                const confettiPiece = document.createElement('div');
+            var confettiCount = 200;
+            var confettiContainer = document.body;
+            for (var i = 0; i < confettiCount; i++) {
+                var confettiPiece = document.createElement('div');
                 confettiPiece.classList.add('confetti');
                 confettiPiece.style.left = Math.random() * 100 + 'vw';
                 confettiPiece.style.top = Math.random() * -50 + 'vh';
-                
-                // Use the wheel colors for confetti
-                const colorIndex = Math.floor(Math.random() * wheelColors.length);
+
+                var colorIndex = Math.floor(Math.random() * wheelColors.length);
                 confettiPiece.style.backgroundColor = wheelColors[colorIndex];
-                
+
                 confettiPiece.style.animationDuration = (Math.random() * 4 + 8) + 's';
                 confettiPiece.style.animationDelay = Math.random() * 1 + 's';
-                confettiPiece.style.transform = `rotate(${Math.random() * 360}deg) scale(${Math.random() * 0.5 + 0.5})`;
+                confettiPiece.style.transform = 'rotate(' + (Math.random() * 360) + 'deg) scale(' + (Math.random() * 0.5 + 0.5) + ')';
                 confettiContainer.appendChild(confettiPiece);
-                
-                setTimeout(() => {
-                    confettiPiece.remove();
-                }, 12000);
+
+                // Use a closure to capture the correct confettiPiece for removal
+                (function(pieceToRemove) {
+                    setTimeout(function() {
+                        // Check if the element is still in the DOM before removing for robustness
+                        if (pieceToRemove && pieceToRemove.parentNode) {
+                            pieceToRemove.parentNode.removeChild(pieceToRemove);
+                        }
+                    }, 14000); // Max animation is ~13s, 14s is a safe removal time
+                })(confettiPiece);
             }
         }
 
         function triggerFireworks() {
-            const fireworkCount = 30;
+            var fireworkCount = 30;
 
-            for (let i = 0; i < fireworkCount; i++) {
-                const numParticles = 30 + Math.floor(Math.random() * 20);
-                
-                const burstX = Math.random() * window.innerWidth;
-                const burstY = Math.random() * window.innerHeight;
+            for (var i = 0; i < fireworkCount; i++) {
+                var numParticles = 30 + Math.floor(Math.random() * 20);
 
-                for (let j = 0; j < numParticles; j++) {
-                    const particle = document.createElement('div');
+                var burstX = Math.random() * window.innerWidth;
+                var burstY = Math.random() * window.innerHeight;
+
+                for (var j = 0; j < numParticles; j++) {
+                    var particle = document.createElement('div');
                     particle.classList.add('firework-particle');
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * 100 + 50;
-                    const translateX = Math.cos(angle) * distance;
-                    const translateY = Math.sin(angle) * distance - (Math.random() * 30 + 20);
 
-                    particle.style.setProperty('--translateX', `${translateX}px`);
-                    particle.style.setProperty('--translateY', `${translateY}px`);
-                    particle.style.left = `${burstX}px`;
-                    particle.style.top = `${burstY}px`;
-                    
-                    // Use the wheel colors for fireworks
-                    const colorIndex = Math.floor(Math.random() * wheelColors.length);
+                    var angle = Math.random() * Math.PI * 2;
+                    var distance = Math.random() * 100 + 50;
+                    var translateX = Math.cos(angle) * distance;
+                    var translateY = Math.sin(angle) * distance - (Math.random() * 30 + 20);
+
+                    particle.style.setProperty('--translateX', translateX + 'px');
+                    particle.style.setProperty('--translateY', translateY + 'px');
+                    particle.style.left = burstX + 'px';
+                    particle.style.top = burstY + 'px';
+
+                    var colorIndex = Math.floor(Math.random() * wheelColors.length);
                     particle.style.backgroundColor = wheelColors[colorIndex];
 
                     document.body.appendChild(particle);
 
-                    setTimeout(() => {
+                    setTimeout(function() {
                         particle.remove();
                     }, 4000);
                 }
             }
-        }        function resetForm() {
+        }
+
+        function resetForm() {
             if(participantForm) {
                 participantForm.reset();
             }
-            
+
             formSection.style.display = 'block';
             wheelSection.style.display = 'none';
             adminSection.style.display = 'none';
             if(resultDiv) resultDiv.textContent = '';
-            
-            // Reset the wheel animation state if needed
+
             if (canvasWheel) {
                 canvasWheel.style.transition = 'none';
                 currentRotationDegrees = currentRotationDegrees % 360;
-                canvasWheel.style.transform = `rotate(${currentRotationDegrees}deg)`;
+                canvasWheel.style.transform = 'rotate(' + currentRotationDegrees + 'deg)';
             }
-            
-            // Make sure spinning is re-enabled
+
             isSpinning = false;
             if (spinBtn) {
                 spinBtn.disabled = false;
             }
-            isWheelOnlyModeActive = false; // Reset wheel-only mode state
-            if(wheelOnlyBtn) wheelOnlyBtn.classList.remove('active'); // Deactivate Wh button
+            isWheelOnlyModeActive = false;
+            if(wheelOnlyBtn) wheelOnlyBtn.classList.remove('active');
             resetIdleTimer();
         }
+    })();
     </script>
-</body>
-</html>
